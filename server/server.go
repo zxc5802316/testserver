@@ -46,9 +46,12 @@ func Server(addr string) error {
 	// g1 退出
 	g.Go(func() error {
 		stop := make(chan os.Signal,1)
+		//syscall.SIGINT == ctrl + c ?
 		signal.Notify(stop, syscall.SIGINT)
 		select {
 		case sig := <-stop:
+			close(stop)
+			// 也可以 使用 switch 根据signal 不同 做不同的处理
 			return errors.New(fmt.Sprintf("get os.Signal %v", sig))
 		case <-ctx.Done():
 			return ctx.Err()
